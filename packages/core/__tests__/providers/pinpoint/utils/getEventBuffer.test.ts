@@ -22,6 +22,7 @@ const mockConfig = {
 describe('Pinpoint Provider Util: bufferManager', () => {
 	const mockPinpointEventBuffer = PinpointEventBuffer as jest.Mock;
 	const mockIdentityHasChanged = jest.fn();
+	const mockCredentialsHasChanged = jest.fn();
 	const mockFlush = jest.fn();
 
 	beforeEach(() => {
@@ -30,6 +31,7 @@ describe('Pinpoint Provider Util: bufferManager', () => {
 		mockPinpointEventBuffer.mockReset();
 		mockPinpointEventBuffer.mockImplementation(() => ({
 			identityHasChanged: mockIdentityHasChanged,
+			credentialsHasChanged: mockCredentialsHasChanged,
 			flush: mockFlush,
 		}));
 	});
@@ -52,6 +54,18 @@ describe('Pinpoint Provider Util: bufferManager', () => {
 		const testBuffer = getEventBuffer(mockConfig);
 
 		mockIdentityHasChanged.mockReturnValue(true);
+
+		const testBuffer2 = getEventBuffer(mockConfig);
+
+		expect(mockFlush).toHaveBeenCalledTimes(1);
+		expect(testBuffer).not.toBe(testBuffer2);
+	});
+
+	it('flushes & creates a new buffer when the credentials changes', () => {
+		const testBuffer = getEventBuffer(mockConfig);
+
+		mockIdentityHasChanged.mockReturnValue(false);
+		mockCredentialsHasChanged.mockReturnValue(true);
 
 		const testBuffer2 = getEventBuffer(mockConfig);
 

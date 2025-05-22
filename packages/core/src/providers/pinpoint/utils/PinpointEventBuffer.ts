@@ -66,6 +66,15 @@ export class PinpointEventBuffer {
 		return this._config.identityId !== identityId;
 	}
 
+	public credentialsHasChanged(credentials: AuthSession['credentials']) {
+		return (
+			this._config.credentials.accessKeyId !== credentials?.accessKeyId ||
+			this._config.credentials.secretAccessKey !==
+				credentials?.secretAccessKey ||
+			this._config.credentials.sessionToken !== credentials?.sessionToken
+		);
+	}
+
 	public flushAll() {
 		this._putEvents(this._buffer.splice(0, this._buffer.length));
 	}

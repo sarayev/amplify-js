@@ -42,6 +42,8 @@ export const getEventBuffer = ({
 		*/
 		if (buffer.identityHasChanged(identityId)) {
 			buffer.flush();
+		} else if (buffer.credentialsHasChanged(credentials)) {
+			buffer.flush();
 		} else {
 			return buffer;
 		}
