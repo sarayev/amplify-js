@@ -1,0 +1,36 @@
+name: Test CI Environment Variable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_ci_check:
+    name: Test CI variable in pre-push hook
+    runs-on: ubuntu-latest
+    env:
+      CI: ${{ vars.CI }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create test branch
+        run: |
+          git checkout -b test-ci-check-${{ github.run_number }}
+
+      - name: Make a simple change to README
+        run: |
+          echo "Hello " >> README.md
+          echo "<!-- Test change from workflow run ${{ github.run_number }} -->" >> README.md
+
+      - name: Commit and push changes
+        run: |
+          git add README.md
+          git commit -m "test: verify CI check in pre-push hook"
+          git push origin test-ci-check-${{ github.run_number }}
